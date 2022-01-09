@@ -1,0 +1,6 @@
+zig-cache/
+zig-out/
+
+src/blaster/blaster.c
+src/blaster/blaster.h
+src/blaster/blaster.json
