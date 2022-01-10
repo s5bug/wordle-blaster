@@ -41,8 +41,8 @@ pub fn build(b: *std.build.Builder) void {
 
     exe.addIncludeDir("src/blaster");
     exe.addCSourceFile("src/blaster/blaster.c", &[_][]const u8{});
-    //const fut = b.addSystemCommand(&[_][]const u8{ "futhark", "opencl", "--library", "src/blaster/blaster.fut" });
-    //exe.step.dependOn(&fut.step);
+    const fut = b.addSystemCommand(&[_][]const u8{ "futhark", "opencl", "--library", "src/blaster/blaster.fut" });
+    exe.step.dependOn(&fut.step);
 
     exe.install();
 

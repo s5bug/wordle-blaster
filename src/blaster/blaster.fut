@@ -26,7 +26,21 @@ let is_possible [w] (res: guess_result [w]) (check: [w]u8): bool =
   in all_greens && no_greys
 
 let score_of_guess [w] [p] (possibles: [p][w]u8) (guess: [w]u8): u64 =
-  possibles |> map (\possibility -> count (is_possible (guess_against possibility guess)) possibles) |> reduce_comm (+) 0
+  possibles |> map (\possibility -> count (is_possible (guess_against possibility guess)) possibles) |> u64.sum
 
 entry next_guess [w] [d] [p] (dictionary: [d][w]u8) (possibles: [p][w]u8): [w]u8 =
-  min_by (score_of_guess possibles) (replicate w 0) dictionary
+  let chunk_size = 64
+  let num_chunks = (d+chunk_size-1)/chunk_size
+  let get_chunk i arr =
+    take (i64.min (d-i*chunk_size) chunk_size) (drop (i*chunk_size) arr)
+  let (best, _) =
+    loop (cur_best : ([w]u8, u64)) = (replicate w 0,u64.highest) for i < num_chunks do
+     let dictionary_chunk = get_chunk i dictionary
+     let scores_chunk = map (score_of_guess possibles) dictionary_chunk
+     let (best_in_chunk_i, best_in_chunk_score) =
+       min_by (.1) (0,u64.highest)
+              (zip (indices dictionary_chunk) scores_chunk)
+     in if cur_best.1 < best_in_chunk_score
+        then cur_best
+        else (dictionary_chunk[best_in_chunk_i], best_in_chunk_score)
+  in best

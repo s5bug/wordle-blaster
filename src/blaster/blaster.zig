@@ -13,6 +13,7 @@ pub const FutConfig = struct {
         var ptr_opt: ?*fut.futhark_context_config = fut.futhark_context_config_new();
         if (ptr_opt) |ptr| {
             fut.futhark_context_config_set_logging(ptr, 1);
+            fut.futhark_context_config_set_debugging(ptr, 1);
             return FutConfig{
                 .ptr = ptr,
             };
